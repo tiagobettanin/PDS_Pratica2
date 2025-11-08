@@ -1,9 +1,3 @@
-Aqui está a documentação formatada em Markdown (GFM), ideal para um arquivo `README.md` no GitHub.
-
-A principal mudança é o uso de crases (`` `...` ``) para formatar nomes de arquivos, caminhos, variáveis e funções como código.
-
----
-
 ## 📄 Script 1: `a01_preprocess_fft.m`
 
 Este script é responsável pela **Etapa 1** do projeto: aquisição, pré-processamento e análise espectral do áudio. Ele prepara o arquivo de áudio que será usado por todas as outras etapas do trabalho.
