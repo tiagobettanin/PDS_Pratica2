@@ -84,8 +84,6 @@ project/
 
 ├─ figs/                 (tempo, espectros, curva_NRMSE.png)
 
-├─ src/                  (scripts .py se preferirem)
-
 ├─ a01_preprocess_fft.m
 
 ├─ a02_reconstrucoes_metricas.m
@@ -96,5 +94,5 @@ project/
 
 ├─ doc.md
 
-└─ main.ipynb OR main.py (pipeline completo)
+└─ main.m
 
