@@ -92,4 +92,5 @@ CHECKLIST RÁPIDO
 [ ] Pipeline reproduzível (main.* funcionando)
 
 ## Som Passarinho
+OCm recorte nos 7:06, um recorte com 3 segundos
 https://sound-effects.bbcrewind.co.uk/search?q=NHU05104173
