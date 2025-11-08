@@ -77,14 +77,24 @@ Implementar e avaliar as duas estratégias de reconstrução do sinal a partir d
 # Pastas
 
 project/
+
 ├─ data/                 (áudio original e recortes)
 
 ├─ audio_out/            (recon_inc_Kstar.wav, recon_energia_95.wav, pitch_plusN.wav)
+
 ├─ figs/                 (tempo, espectros, curva_NRMSE.png)
+
 ├─ src/                  (scripts .py se preferirem)
+
 ├─ a01_preprocess_fft.m
+
 ├─ a02_reconstrucoes_metricas.m
+
 ├─ a03_pitch_integration.m
+
 ├─ audio_original.wav
+
 ├─ doc.md
+
 └─ main.ipynb OR main.py (pipeline completo)
+
