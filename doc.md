@@ -78,6 +78,7 @@ Implementar e avaliar as duas estratégias de reconstrução do sinal a partir d
 
 project/
 ├─ data/                 (áudio original e recortes)
+
 ├─ audio_out/            (recon_inc_Kstar.wav, recon_energia_95.wav, pitch_plusN.wav)
 ├─ figs/                 (tempo, espectros, curva_NRMSE.png)
 ├─ src/                  (scripts .py se preferirem)
