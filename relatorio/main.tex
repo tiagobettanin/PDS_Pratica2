@@ -1,0 +1,151 @@
+\documentclass[12pt,a4paper,brazil]{article}
+
+\newcommand{\userName}{PDCO6A}
+\newcommand{\institution}{UTFPR-AP}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\geometry{left=2cm,right=2cm,top=2.2cm,bottom=2.2cm}
+\usepackage{researchdiary_png}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{caption}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue}
+
+\begin{document}
+\thispagestyle{primeirapagina}
+\begin{center}
+{\textbf {\huge Atividade Prática 2
+}}\\[5mm]
+{\large Disciplina: Processamento Digital De Sinais}\\[4mm]
+{\large Professor: Daniel Campos}\\[4mm]
+{\large Aluno: Gabriel Ferragini - RA: 2453061} \\[2mm]
+{\large Aluno: Leonardo Dal Poz Cardoso - RA: 2553104} \\[2mm]
+{\large Aluno: Tiago Navarro Bettanin - RA: 2477866} \\[2mm]
+\end{center}
+
+\section*{Resumo}
+
+Este trabalho apresenta a análise e reconstrução de sinais de áudio no domínio da frequência utilizando a Transformada Rápida de Fourier (FFT). O objetivo principal foi compreender a composição espectral de um sinal sonoro real, avaliar diferentes estratégias de reconstrução baseadas em componentes espectrais e implementar uma técnica de transposição de frequência (pitch shift).
+
+O áudio escolhido foi um canto de pássaro extraído do acervo BBC Sound Effects (\url{https://sound-effects.bbcrewind.co.uk/search?q=NHU05104173}), com recorte de 3 segundos no timestamp 7:06. O processamento foi dividido em três etapas principais: (1) pré-processamento e análise espectral via FFT, (2) reconstrução incremental do sinal por critérios de erro (NRMSE) e energia, e (3) transposição espectral por escalonamento de frequências.
+
+Os resultados demonstram que é possível reconstruir o sinal com alta fidelidade utilizando apenas uma fração dos componentes espectrais, evidenciando a eficiência da representação no domínio da frequência.
+
+\section*{Metodologia}
+
+\subsection*{Pré-processamento (Script 1)}
+
+O áudio original foi convertido para mono pela média dos canais, seguido de recorte temporal entre $t = 0.5$ s e $t = 1.8$ s. A normalização de amplitude foi aplicada para garantir valores no intervalo $[-1, 1]$.
+
+A análise espectral foi realizada através da DFT (implementada via FFT), com correção de amplitude conforme $|X(k)|_{\text{real}} = 2|X(k)|/N$ para componentes não-DC e não-Nyquist. A detecção de picos espectrais utilizou o algoritmo \texttt{findpeaks} do MATLAB para identificar as frequências dominantes.
+
+\subsection*{Reconstrução de Sinais (Script 2)}
+
+Duas estratégias de reconstrução foram implementadas:
+
+\textbf{Critério de Erro (NRMSE):} Os componentes espectrais foram ordenados por magnitude decrescente e adicionados incrementalmente até atingir NRMSE $\leq 10\%$, onde:
+$$
+\text{NRMSE} = \frac{\|x - \hat{x}\|_2}{\|x\|_2} \times 100\%
+$$
+
+\textbf{Critério de Energia:} Componentes foram selecionados por ordem de energia $E_k = |X(k)|^2$ até acumular 95\% da energia total $E_{\text{total}} = \sum_{k=0}^{N-1} |X(k)|^2$. Em ambos os casos, pares conjugados foram preservados para garantir sinais reais.
+
+\subsection*{Pitch Shift (Script 3)}
+
+A transposição foi realizada por escalonamento espectral com fator $\alpha = 2^{N/12}$, onde $N$ representa os semitons desejados. O espectro complexo foi interpolado para $Y(f/\alpha)$ usando interpolação linear nas partes real e imaginária separadamente.
+
+\section*{Parâmetros}
+
+\begin{itemize}
+    \item \textbf{Taxa de amostragem:} 44.1 kHz
+    \item \textbf{Duração do trecho:} 1.3 s (de 0.5 s a 1.8 s)
+    \item \textbf{Número de amostras (N):} 57330
+    \item \textbf{Alvo NRMSE:} $\leq 10\%$
+    \item \textbf{Fração de energia alvo:} 95\%
+    \item \textbf{Transposição:} +3 semitons ($\alpha = 1.1892$)
+    \item \textbf{Componentes analisadas:} Top 5 picos espectrais
+\end{itemize}
+
+\section*{Figuras}
+
+\subsection*{Análise Espectral}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/pdfs/espectro_magnitude.pdf}
+    \caption{Análise espectral do sinal de áudio processado. \textbf{Superior:} Sinal no domínio do tempo após normalização. \textbf{Centro:} Espectro de magnitude em escala linear, destacando os picos de frequência dominantes (marcados em vermelho). \textbf{Inferior:} Espectro de magnitude em escala logarítmica (dB), evidenciando componentes de menor amplitude. A análise revela a composição harmônica do canto do pássaro, com frequências fundamentais e harmônicos superiores claramente identificáveis.}
+    \label{fig:espectro_mag}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/pdfs/espectro_fase.pdf}
+    \caption{Espectro de fase do sinal (unwrapped). A fase desempacotada (unwrap) permite visualizar a relação de fase entre componentes espectrais ao longo de todo o espectro. As variações de fase são importantes para preservar a estrutura temporal do sinal durante a síntese por IFFT.}
+    \label{fig:espectro_fase}
+\end{figure}
+
+\subsection*{Reconstrução por Critério de Erro}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/pdfs/curva_NRMSE.pdf}
+    \caption{Evolução do erro NRMSE em função do número de componentes espectrais utilizadas na reconstrução. O ponto destacado em vermelho indica $K^*$, o número mínimo de componentes necessárias para atingir NRMSE $\leq 10\%$. A curva demonstra que a maior parte da informação do sinal está concentrada em relativamente poucas componentes de alta magnitude, validando a eficiência da representação espectral. O decaimento exponencial do erro evidencia a natureza compacta do sinal no domínio da frequência.}
+    \label{fig:curva_nrmse}
+\end{figure}
+
+\subsection*{Transposição de Frequência (Pitch Shift)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/pdfs/comparacao_pitch.pdf}
+    \caption{Comparação entre o sinal original e o sinal transposto +3 semitons. \textbf{Superior:} Sinal original normalizado. \textbf{Inferior:} Sinal após transposição espectral com $\alpha = 1.1892$. Observa-se que a estrutura temporal foi preservada, enquanto todas as componentes espectrais foram deslocadas proporcionalmente para frequências mais altas. A técnica de interpolação no domínio da frequência permite a transposição sem alterar a duração do sinal, ao contrário de métodos baseados em reamostragem temporal.}
+    \label{fig:pitch}
+\end{figure}
+
+\section*{Resultados}
+
+\subsection*{Componentes Espectrais Principais}
+
+Os 5 picos de maior magnitude identificados foram:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Frequência (Hz)} & \textbf{Amplitude (linear)} & \textbf{Amplitude (dB)} \\
+\hline
+2420.0 & 0.024111 & -32.356 \\
+2422.3 & 0.023170 & -32.702 \\
+2514.6 & 0.021314 & -33.427 \\
+2516.2 & 0.021031 & -33.543 \\
+2526.2 & 0.020834 & -33.625 \\
+\hline
+\end{tabular}
+\end{center}
+
+Observa-se que os picos dominantes estão concentrados na faixa de 2420-2526 Hz, indicando a frequência fundamental do canto do pássaro e seus harmônicos próximos. A proximidade entre as frequências sugere a presença de modulação característica de vocalizações aviárias.
+
+\subsection*{Reconstruções}
+
+\textbf{Critério de Erro:} Foram necessárias \textbf{4550 componentes espectrais} (15.87\% do total) para atingir NRMSE de \textbf{10.0\%}. Este resultado demonstra que apenas uma fração dos componentes espectrais é suficiente para reconstruir o sinal com alta fidelidade perceptual.
+
+\textbf{Critério de Energia:} Para preservar 95\% da energia total, foram utilizadas \textbf{2760 componentes} (9.63\% do total), resultando em NRMSE de \textbf{22.39\%}. A diferença entre os dois critérios evidencia que a preservação de energia não implica necessariamente em minimização de erro quadrático médio. O critério de energia foi mais conservador em termos de número de componentes, mas resultou em maior erro de reconstrução, sugerindo que componentes de baixa amplitude mas alta frequência contribuem significativamente para a forma de onda temporal.
+
+\subsection*{Transposição de Frequência}
+
+A transposição de \textbf{+3 semitons} com fator de escalonamento \textbf{$\alpha = 1.1892$} foi aplicada com sucesso. O áudio resultante manteve a estrutura temporal original (1.30 s) enquanto todas as componentes espectrais foram deslocadas proporcionalmente, resultando em frequências dominantes na faixa de aproximadamente 2877-3003 Hz.
+
+\section*{Conclusão}
+
+O trabalho demonstrou com sucesso a aplicação prática da análise de Fourier em sinais de áudio reais. A metodologia de reconstrução incremental revelou que sinais sonoros naturais, como o canto de pássaros, apresentam representação esparsa no domínio da frequência, permitindo reconstruções de alta fidelidade com redução significativa de componentes.
+
+A comparação entre os critérios de erro e energia evidenciou trade-offs entre complexidade computacional e qualidade perceptual. O critério de energia mostrou-se mais conservador, utilizando mais componentes para garantir a preservação da estrutura harmônica do sinal.
+
+A técnica de pitch shift por escalonamento espectral demonstrou ser eficaz para transposição de frequências, mantendo a duração e características temporais do sinal original. Esta abordagem é particularmente útil em aplicações de processamento de áudio em tempo real.
+
+Os resultados obtidos validam a importância da análise espectral no processamento digital de sinais e abrem possibilidades para futuras explorações, como compressão de áudio, síntese sonora e reconhecimento de padrões.
+
+\end{document}

@@ -1,19 +1,17 @@
-clear; clc; close all;
-
 %% 1. Aquisição
-file = "audio_original.wav"; 
+file = "../data/audio_original.wav"; 
 [x, Fs] = audioread(file);
-fprintf('Arquivo original: %s\nTaxa de amostragem: %d Hz\n', file, Fs);
-fprintf('Duração original: %.2f s\n', length(x)/Fs);
+fprintf('Arquivo original: %s\t\nTaxa de amostragem: %d Hz\n', file, Fs);
+fprintf('\tDuração original: %.2f s\n\n', length(x)/Fs);
 % sound(x, Fs); % Opcional: ouvir o áudio original
 
-%% 2. Converter para mono
+%% 2. Converter para mono (Pra quantos canais for necessário)
 if size(x,2) > 1
     x = mean(x, 2);
-    fprintf('Convertido para mono.\n');
+    fprintf('Convertido para mono.\n\n');
 end
 
-%% 3. Recortar a região de interesse (Manual)
+%% 3. Recortar a região de interesse
 % (Ajustar 't_inicio' e 't_fim' para pegar < 3s do som principal)
 t_inicio = 0.5; % [s] Início do recorte (AJUSTAR)
 t_fim = 1.8;    % [s] Fim do recorte (AJUSTAR)
@@ -28,19 +26,19 @@ if idx_fim > length(x); idx_fim = length(x); end
 
 x_recortado = x(idx_inicio:idx_fim);
 fprintf('Áudio recortado entre %.2f s e %.2f s.\n', t_inicio, t_fim);
-fprintf('Duração final: %.2f s (Amostras: %d)\n', length(x_recortado)/Fs, length(x_recortado));
+fprintf('Duração final: %.2f s (Amostras: %d)\n\n', length(x_recortado)/Fs, length(x_recortado));
 
 %% 4. Normalizar o trecho final para amplitude em [-1, 1]
 x_proc = x_recortado / max(abs(x_recortado));
-fprintf('Amplitude normalizada para [-1, 1].\n');
+fprintf('Amplitude normalizada para [-1, 1].\n\n');
 
-%% 5. Salvar o áudio processado (Handoff para Pessoa 2)
-output_filename = 'data/audio_recortado.wav';
+%% 5. Salvar o áudio processado
+output_filename = '../data/audio_recortado.wav';
 audiowrite(output_filename, x_proc, Fs);
-fprintf('Handoff salvo em: %s\n', output_filename);
+fprintf('Áudio processado salvo em: %s\n\n', output_filename);
 
 %% 6. Calcular FFT
-N = length(x_proc);
+N = length(x_proc); 
 X = fft(x_proc);
 
 % Correção de Amplitude (Refinamento Técnico)
@@ -75,7 +73,8 @@ disp(T);
 t = (0:length(x_proc)-1)/Fs;
 
 % Gráfico 1: Sinal e Espectros
-figure('Name', 'Analise Espectral (Pessoa 1)');
+
+figure('Name', 'Analise Espectral');
 subplot(3,1,1);
 plot(t, x_proc);
 xlabel('Tempo [s]'); ylabel('Amplitude');
@@ -96,15 +95,18 @@ xlabel('Frequência [Hz]'); ylabel('Magnitude [dB]');
 title('Espectro de Magnitude (dB)');
 grid on; xlim([0 Fs/2]);
 
-saveas(gcf, 'figs/espectro_magnitude.png');
+% Fim do Gráfico 1 e salvar
+saveas(gcf, '../figs/espectro_magnitude.png');
+saveas(gcf, '../figs/pdfs/espectro_magnitude.pdf');
 
 % Gráfico 2: Fase
-figure('Name', 'Espectro de Fase (Pessoa 1)');
+figure('Name', 'Espectro de Fase');
 plot(f_pos, unwrap(X_phase_pos));
 xlabel('Frequência [Hz]');
 ylabel('Fase [rad]');
 title('Espectro de Fase (unwrap)');
 grid on; xlim([0 Fs/2]);
-saveas(gcf, 'figs/espectro_fase.png');
+saveas(gcf, '../figs/espectro_fase.png');
+saveas(gcf, '../figs/pdfs/espectro_fase.pdf');
 
-fprintf('Script da Pessoa 1 concluído. Gráficos salvos em /figs/.\n');
+fprintf('Script da a01 concluído. Gráficos salvos em /figs/.\n');

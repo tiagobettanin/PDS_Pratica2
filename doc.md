@@ -1,3 +1,45 @@
+# 📊 PDS Prática 2 - Pipeline de Processamento Digital de Sinais de Áudio
+
+## 🎯 Visão Geral do Projeto
+
+Este projeto implementa um **pipeline completo** de processamento de sinais de áudio, dividido em **3 etapas principais**, executadas sequencialmente através do script `main.m`:
+
+1. **Pré-processamento e Análise Espectral** (FFT)
+2. **Reconstrução do Sinal** (Critérios de Erro e Energia)
+3. **Pitch Shift** (Transposição de Frequência)
+
+### 🚀 Como Executar o Projeto
+
+Para rodar o pipeline completo, basta executar o script principal no MATLAB:
+
+```matlab
+main
+```
+
+O script `main.m` irá:
+- ✅ Criar automaticamente a estrutura de pastas necessária
+- ✅ Verificar a presença do arquivo de entrada (`data/audio_original.wav`)
+- ✅ Executar os 3 scripts em sequência
+- ✅ Validar a geração de todos os entregáveis
+- ✅ Exibir um resumo completo com métricas e tempo de execução
+
+### 📁 Estrutura de Diretórios
+
+```
+project/
+├─ data/                 (áudio original e recortes)
+├─ audio_out/            (recon_inc_Kstar.wav, recon_energia_95.wav, pitch_plusN.wav)
+├─ figs/                 (tempo, espectros, curva_NRMSE.png)
+├─ a01_preprocess_fft.m
+├─ a02_reconstrucoes_metricas.m
+├─ a03_pitch_integration.m
+├─ audio_original.wav
+├─ doc.md
+└─ main.m
+```
+
+---
+
 ## 📄 Script 1: `a01_preprocess_fft.m`
 
 Este script é responsável pela **Etapa 1** do projeto: aquisição, pré-processamento e análise espectral do áudio. Ele prepara o arquivo de áudio que será usado por todas as outras etapas do trabalho.
@@ -74,25 +116,37 @@ Implementar e avaliar as duas estratégias de reconstrução do sinal a partir d
     * Calcula a IFFT (`ifft`), normaliza o sinal resultante e o salva como `recon_energia_95.wav`.
     * Exibe no console uma tabela com os resultados (NRMSE final, componentes usadas, etc.).
 
-# Pastas
+---
 
-project/
+## 🎶 Script 3: `a03_pitch_integration.m`
 
-├─ data/                 (áudio original e recortes)
+Este script é responsável pela **Etapa 3**: integrar a mudança de pitch (altura) no sinal de áudio, utilizando a técnica de modulação em anel.
 
-├─ audio_out/            (recon_inc_Kstar.wav, recon_energia_95.wav, pitch_plusN.wav)
+### Propósito
+Aplicar um deslocamento de pitch para alterar a percepção da altura do som, sem afetar sua duração.
 
-├─ figs/                 (tempo, espectros, curva_NRMSE.png)
+### Entradas (Inputs)
+* `data/audio_recortado.wav`: O arquivo de áudio processado e entregue pela Pessoa 1.
 
-├─ a01_preprocess_fft.m
+### Saídas (Outputs / Entregáveis)
+* `audio_out/pitch_plusN.wav`: Áudio com o pitch alterado.
+* `figs/espectro_pitch.png`: Gráfico do espectro de magnitude antes e depois da mudança de pitch.
 
-├─ a02_reconstrucoes_metricas.m
+### Parâmetros Ajustáveis (no código)
+* `semitones` (linha 4): O número de semitons para aumentar (positivo) ou diminuir (negativo) o pitch.
 
-├─ a03_pitch_integration.m
+### Fluxo de Execução
+1.  **Setup:** Cria a pasta `audio_out/` (se não existir).
+2.  **Carregar Handoff:** Carrega o `data/audio_recortado.wav`.
+3.  **Mudança de Pitch:** Aplica a modulação em anel para deslocar o pitch do sinal.
+4.  **Handoff (Salvar):** Salva o áudio processado como `audio_out/pitch_plusN.wav`.
+5.  **Geração de Gráficos:** Plota e salva o gráfico do espectro de magnitude antes e depois da mudança de pitch.
 
-├─ audio_original.wav
+---
 
-├─ doc.md
+## 📋 Considerações Finais
 
-└─ main.m
+- O projeto foi estruturado para facilitar a compreensão e a execução sequencial das etapas de processamento de áudio.
+- Certifique-se de que todas as dependências e caminhos estejam corretamente configurados antes de executar o `main.m`.
+- As saídas de cada etapa são utilizadas como entradas na etapa seguinte, formando um pipeline contínuo de processamento.
 

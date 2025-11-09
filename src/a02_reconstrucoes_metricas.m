@@ -1,16 +1,14 @@
-clear; clc; close all;
-
 % --- Parâmetros do Projeto ---
 TARGET_NRMSE = 0.10;  % 10%
 TARGET_ENERGY = 0.95; % 95%
 
-%% 1. Carregar Handoff (Pessoa 1) e Calcular FFT
-input_file = 'data/audio_recortado.wav';
-fprintf('Carregando áudio pré-processado pela Pessoa 1 de: %s\n', input_file);
+%% 1. Carregar audio recortado e Calcular FFT
+input_file = '../data/audio_recortado.wav';
+fprintf('Carregando áudio pré-processado de: %s\n', input_file);
 try
     [x, Fs] = audioread(input_file);
 catch
-    error('Arquivo "%s" não encontrado. Rode o script da Pessoa 1 primeiro.', input_file);
+    error('Arquivo "%s" não encontrado. Rode o script a01 primeiro.', input_file);
 end
 
 N = length(x);
@@ -80,7 +78,7 @@ for i = 1:length(indices_ordenados)
         fprintf('NRMSE em K*: %.2f%%\n', err*100);
         
         % Salvar áudio entregável
-        audiowrite('audio_out/recon_inc_Kstar.wav', x_recon_inc_temp, Fs);
+        audiowrite('../audio_out/recon_inc_Kstar.wav', x_recon_inc_temp, Fs);
     end
 end
 
@@ -89,7 +87,7 @@ if ~K_star_found
 end
 
 % Plotar curva Erro x Nº de componentes
-figure;
+figure('Name', 'Comparação: Erro (NRMSE)');
 plot(components_count, nrmse_history * 100, 'b-', 'LineWidth', 1.5);
 hold on;
 if K_star_found
@@ -102,7 +100,8 @@ xlabel('Nº de Componentes (K)');
 ylabel('NRMSE (%)');
 grid on;
 ylim([0, 100]);
-saveas(gcf, 'figs/curva_NRMSE.png'); % Salva na pasta de figuras
+saveas(gcf, '../figs/curva_NRMSE.png'); 
+saveas(gcf, '../figs/pdfs/curva_NRMSE.pdf'); 
 
 %% 4. Tarefa 2: Reconstrução por Energia (Fração Alvo 95%)
 
@@ -150,7 +149,7 @@ x_recon_energy = real(ifft(X_recon_energy)); % <-- 1. CRIA O SINAL PRIMEIRO
 % Renormaliza para garantir que está em [-1, 1] antes de salvar
 x_recon_energy = x_recon_energy / max(abs(x_recon_energy)); 
 
-audiowrite('audio_out/recon_energia_95.wav', x_recon_energy, Fs); 
+audiowrite('../audio_out/recon_energia_95.wav', x_recon_energy, Fs); 
 
 % Comparação quantitativa e qualitativa
 nrmse_energy = nrmse_calc(x_recon_energy);
@@ -162,11 +161,7 @@ T_energia = table(TARGET_ENERGY*100, frac_energy_obtida*100, num_comps_energy, n
     'VariableNames', {'Energia Alvo (%)', 'Energia Obtida (%)', 'Componentes Usadas (K)', 'NRMSE Final (%)'});
 disp(T_energia);
 
-disp('Comentário perceptual (Energia 95%):');
-disp('  [Pessoa 2: Ouça "recon_energia_95.wav" e "data/audio_recortado.wav" e escreva seu comentário perceptual aqui.]');
-disp(' ');
-
-fprintf('\nScript da Pessoa 2 concluído. Entregáveis gerados:\n');
+fprintf('\nScript da a02 concluído. Entregáveis gerados:\n');
 disp('  - audio_out/recon_inc_Kstar.wav');
 disp('  - audio_out/recon_energia_95.wav');
-disp('  - figs/curva_NRMSE.png');
+disp('  - figs/curva_NRMSE.png e pdf');
